@@ -13,7 +13,7 @@ const UserSchema = new Schema({
     bornDate: { type: Date },
     email: { type: String, required: true, unique: true, index:true },
     password: { type: String, required: true },
-    active: { type: Boolean, required: true }, //default: false
+    active: { type: Boolean,  }, //required: true//default: false
     role: {type: String, enum: validRoles },
     age: { type: Number, required: true, min: 12, max: 100 }
 })
