@@ -10,11 +10,13 @@ api.get('/user', userController.getUser);
 api.get('/users/:userID', userController.getUser);
 
 //Para escribir data en el backend se suele enviar con método POST a través del body.
+api.post('/users', userController.createUser);
 
-api.post('/user', userController.createUser);
 
-api.delete('/user', userController.deleteUser)
-api.put('/user', userController.updateUser)
+api.delete('/users/:userToDeleteID', userController.deleteUser);
+
+api.put('/users', userController.updateUser)
+
 api.post('/login', userController.login)
 
 module.exports = api
