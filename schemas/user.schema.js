@@ -18,4 +18,4 @@ const UserSchema = new Schema({
     age: { type: Number, required: true, min: 12, max: 100 }
 })
 
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema) //En mongoDB busca una collección llamada **users**
