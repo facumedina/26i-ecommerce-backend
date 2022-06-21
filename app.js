@@ -3,7 +3,6 @@ const app = express();
 const cors = require('cors')
 
 const user_routes = require('./routes/user.routes');
-
 const product_routes = require('./routes/product.routes')
 
 app.use(cors())

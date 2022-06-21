@@ -37,7 +37,9 @@ async function getUsers(req, res) {
               //   ],                
             .select({ password: 0, __v: 0 }) //Indicar a mongo que no devuelva estos campos.
             .skip(page * items) //saltear x cantidad de resultados.
-            .limit(3), // devolver x numero de resultados.
+            .limit(3) // devolver x numero de resultados.
+            .collation({ locale: 'es' }) //para que al ordenar no haga diferencias entre mayusculas y minusculas
+            .sort({fullName: 1}), //Orden de menor a mayor. y -1 descendente.
         //Elemento 1 del array
         User.find(criterioDeBusqueda).countDocuments()
       ])
