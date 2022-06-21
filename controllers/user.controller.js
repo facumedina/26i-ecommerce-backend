@@ -3,29 +3,41 @@ const User = require("../schemas/user.schema");
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 
-function getUsers(req, res) {
+async function getUsers(req, res) {
   //users
-  User.find({}, (error, users) => {
-    if (error) {
-      return res.status(500).send({
-        ok: false,
-        message: `Error al obtener usuarios`,
-      });
-    }
+  let criterioDeBusqueda = {}
+  const name = req.params.name //Valor de varible (name)
+  
+  if(name) {
+    criterioDeBusqueda = { fullName: new RegExp(name, 'i') }
+  }
 
-    if (users.length === 0) {
+  console.log(criterioDeBusqueda)
+
+  try {
+      const users = await User.find(criterioDeBusqueda).select({ password: 0, __v: 0 });
+
+      if (users.length === 0) {
+        return res.status(200).send({
+          ok: true,
+          message: `No se encontró ningun usuario`,
+        })
+      }
+
       return res.status(200).send({
         ok: true,
-        message: `No se encontró ningun usuario`,
-      });
-    }
+        message: `Usuarios obtenidos correctamente`,
+        users: users
+      })
 
-    return res.status(200).send({
-      ok: true,
-      message: `Usuarios obtenidos correctamente`,
-      users: users,
-    });
-  });
+  } catch (error) {
+      if (error) {
+        return res.status(500).send({
+          ok: false,
+          message: `Error al obtener usuarios`,
+        })
+      }
+  }
 }
 
 // function getUser(req, res) {
