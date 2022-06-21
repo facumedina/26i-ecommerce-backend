@@ -1,10 +1,11 @@
 const express = require('express');
 const api = express.Router();
-const userController = require('../controllers/user.controller')
+const userController = require('../controllers/user.controller');
+const jwtVerify = require('../middlewares/jwt');
 
-api.get('/users/:name?', userController.getUsers);
+api.get('/users/:name?', jwtVerify, userController.getUsers);
 
-api.get('/user', userController.getUser);
+// api.get('/user', userController.getUser);
 
 //Necesito enviar un dato por que necesito traer 1 solo documento (user)
 api.get('/user/:userID', userController.getUser);
@@ -13,9 +14,9 @@ api.get('/user/:userID', userController.getUser);
 api.post('/users', userController.createUser);
 
 
-api.delete('/users/:userToDeleteID', userController.deleteUser);
+api.delete('/users/:userToDeleteID', [jwtVerify, isAdmin], userController.deleteUser);
 
-api.put('/users', userController.updateUser)
+api.put('/users',jwtVerify, userController.updateUser)
 
 api.post('/login', userController.login)
 
