@@ -36,8 +36,8 @@ async function getUsers(req, res) {
               //   { age: { $gte: 34} } //gte mayor e igual que 34, gt mayor que 34 y lt menor q 34, lte menor e igual q 34.
               //   ],                
             .select({ password: 0, __v: 0 }) //Indicar a mongo que no devuelva estos campos.
-            .skip(page * items) //saltear x cantidad de resultados.
-            .limit(3), // devolver x numero de resultados.
+            .skip(page * items), //saltear x cantidad de resultados.
+            // .limit(3), // devolver x numero de resultados.
 
         User.find(criterioDeBusqueda).countDocuments()
       ])
