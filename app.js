@@ -13,6 +13,8 @@ app.get('/', (req, res) => {
     return res.send('Ruta principal de mi servidor NODEMON')
 })
 
-app.use(user_routes)
+app.use('/api', [
+    user_routes
+])
 
 module.exports = app;

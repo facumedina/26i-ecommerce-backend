@@ -1,7 +1,10 @@
 const res = require("express/lib/response");
 const User = require("../schemas/user.schema");
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const secretSeed = require('../config/config').secret;
 const saltRounds = 10;
+
 
 async function getUsers(req, res) {
   //users
@@ -41,21 +44,6 @@ async function getUsers(req, res) {
 
       const users = resultados[0];
       const total = resultados[1];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       if (users.length === 0) {
@@ -174,10 +162,17 @@ async function deleteUser(req, res) {
 }
 
 
-
 const updateUser = async (req, res) => {
   
   const id = req.query.idToAndUpdate
+          //true                    //false
+  if(req.user._id !== id && req.user.role !== 'ADMIN_ROLE') {
+    return res.status(401).send({
+        ok: false,
+        message: `No tiene permisos para modificar este usuario`
+    })
+  } 
+
 
   const newUser = await User.findByIdAndUpdate(id, req.body, { new: true })
 
@@ -188,40 +183,50 @@ const updateUser = async (req, res) => {
 };
 
 const login = async function (req, res) {
+  try {
+    const reqEmail = req.body.email;
+    const reqPassword = req.body.password;
 
-  const reqEmail = req.body.email;
-  const reqPassword = req.body.password;
-
-  // 1ro: Buscar en la base de datos de usuarios si el email existe.
-  const user = await User.findOne({ email: reqEmail }) //find (busca todos los usuarios y mira la propiedad email y sea como la persona me mandó cuando se logueó y sigue buscando entretodos a ver si encuentra otro más y findOne cuando encuentra el primero ya corta la búsqueda).
-  console.log(`user`, user)
-  // No existe: enviar error e indicar que alguna credencial es incorrecta.
-  if(user == null) {
+    // 1ro: Buscar en la base de datos de usuarios si el email existe.
+    const user = await User.findOne({ email: reqEmail }); //find (busca todos los usuarios y mira la propiedad email y sea como la persona me mandó cuando se logueó y sigue buscando entretodos a ver si encuentra otro más y findOne cuando encuentra el primero ya corta la búsqueda).
+    console.log(`user`, user)
+    // No existe: enviar error e indicar que alguna credencial es incorrecta.
+    if(user == null) {
     return res.status(404).send({ message: 'No se encontró ningún usuario con ese correo'})
-  }
+    }
 
-  //Si existe voy a comparar el password de la base de datos con el password que ingreso la persona en el login.
-  // Si existe voy a comparar el password de la base de datos con el password que ingreso la persona en el login.
+    //Si existe voy a comparar el password de la base de datos con el password que ingreso la persona en el login.
+    // Si existe voy a comparar el password de la base de datos con el password que ingreso la persona en el login.
 
-  const checkPassword = await bcrypt.compare(reqPassword, user.password)
+    const checkPassword = await bcrypt.compare(reqPassword, user.password)
 
-  console.log(`Bcrypt compare`, checkPassword)
+    console.log(`Bcrypt compare`, checkPassword)
 
 
-  if(checkPassword === false) {
-    return res.status(400).send({ message: 'Credenciales incorrectas'})
-  }
+    if(checkPassword === false) {
+      return res.status(400).send({ message: 'Credenciales incorrectas'})
+    }
 
+    user.password = undefined;
+  
+    const token = await jwt.sign(user.toJSON(), secretSeed)
 
 
     // 2do: Comparo el password que viene en el request body con el password que tiene el usuario con el email ingresado
-
-
-  user.password = undefined;
-  return res.send({ message: "Login de usuario correcto", user });
+  
+    return res.send({ 
+      message: "Login de usuario correcto", 
+      user, 
+      token 
+    })
+  } catch (error) {
+      return res.status(500).send({
+        ok: false,
+        message: 'Error al intentar loguear usuario',
+      })
+  }
+  
 };
-
-
 
 
 
@@ -232,5 +237,5 @@ module.exports = {
   deleteUser,
   updateUser,
   login,
-  getUsers,
+  getUsers
 };
