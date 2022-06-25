@@ -36,8 +36,8 @@ async function getUsers(req, res) {
               //   { age: { $gte: 34} } //gte mayor e igual que 34, gt mayor que 34 y lt menor q 34, lte menor e igual q 34.
               //   ],                
             .select({ password: 0, __v: 0 }) //Indicar a mongo que no devuelva estos campos.
-            .skip(page * items) //saltear x cantidad de resultados.
-            .limit(3), // devolver x numero de resultados.
+            .skip(page * items), //saltear x cantidad de resultados.
+            // .limit(3), // devolver x numero de resultados.
 
         User.find(criterioDeBusqueda).countDocuments()
       ])
@@ -165,13 +165,21 @@ async function deleteUser(req, res) {
 const updateUser = async (req, res) => {
   
   const id = req.query.idToAndUpdate
-          //true                    //false
-  if(req.user._id !== id && req.user.role !== 'ADMIN_ROLE') {
+
+  //true                    //false
+  if (req.user._id !== id && req.user.role !== "ADMIN_ROLE") {
     return res.status(401).send({
-        ok: false,
-        message: `No tiene permisos para modificar este usuario`
-    })
+      ok: false,
+      message: `No tiene permisos para modificar este usuario`,
+    });
   } 
+
+  
+  //Checkeo si viene un password a actualizar y de ser tru lo hasheo de la misma forma que lo hacia en el momento de crear un User.
+  if (req.body.password) {
+    req.body.password = await bcrypt.hash(req.body.password, saltRounds)    
+  }
+
 
 
   const newUser = await User.findByIdAndUpdate(id, req.body, { new: true })
