@@ -3,7 +3,8 @@ const api = express.Router();
 const userController = require('../controllers/user.controller');
 const jwtVerify = require('../middlewares/jwt');
 const isAdmin = require('../middlewares/isAdmin');
-const { userLoginValidator, validate } = require('../middlewares/userValidators')
+const { userLoginValidator } = require('../middlewares/userValidators')
+const validate = require('../middlewares/validate');
 
 
 //* Forma extensa de definir variables.
