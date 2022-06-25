@@ -10,7 +10,7 @@ const OrderSchema = new Schema({
             price: Number
         }
     ],
-    user: { type: Object, ref: 'User', required: true},
+    user: { type: String, ref: 'User', required: true},
     createdAt: { type: Date, default: Date.now, required: true }
 })
 

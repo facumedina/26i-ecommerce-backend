@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
-const port = 3400; //el puerto son ventanas que usa windows para comunicar diferentes aplicaciones
+//require('dotenv').config()
+//console.log(process.env)
+
+// const port = 3400; //el puerto son ventanas que usa windows para comunicar diferentes aplicaciones
+const port = process.env.PORT || 3400;
+
 const password = require('./config/config').dbPassword
+
 const URL = `mongodb+srv://facumedina:${password}@cluster0.s5qk3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
 // const URL = `mongodb+srv://neotech:Clav3Clav3@cluster0.lwbyo.mongodb.net/ng?authSource=admin&replicaSet=atlas-m10gyp-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`;
