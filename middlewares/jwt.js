@@ -1,4 +1,4 @@
-const res = require('express/lib/response');
+// const res = require('express/lib/response');
 const jwt = require('jsonwebtoken');
 const secretSeed = require('../config/config').secret;
 
@@ -10,18 +10,19 @@ const jwtVerify =  ( req, res, next) => {
     const tokenFromRequest = req.headers.authorization;
 
 
-    jwt.verify(tokenFromRequest, secretSeed, (err, decoded) => {
+    jwt.verify(tokenFromRequest, secretSeed, (err, userDecoded) => {
         if(err) {
             return res.status(401).send ({
                 message: 'Token invalido'
             });
         }
+
+        req.user = userDecoded
+    
+        next();
+
     })
 
-    console.log(decoded)
-    req.user = decoded
-
-    next();
 }
 
 module.exports = jwtVerify
